@@ -34,17 +34,22 @@ export default function Navigation() {
             <Link to="/dashboard" className="text-gray-700 hover:text-gray-900 font-mono">
               Dashboard
             </Link>
-            <Link to="/banks" className="text-gray-700 hover:text-gray-900 font-mono">
-              Banks 
-              
+            <Link to="/orders" className="text-gray-700 hover:text-gray-900 font-mono">
+              Orders
+            </Link>
+            <Link to="/notifications" className="text-gray-700 hover:text-gray-900 font-mono">
+              Notifications
+            </Link>
+            <Link to="/profile" className="text-gray-700 hover:text-gray-900 font-mono">
+              Profile
             </Link>
             <div className="flex items-center space-x-4">
-              <button className="px-4 py-2 border-2 border-gray-800 text-gray-800 font-mono">
+              <Link to="/login" className="px-4 py-2 border-2 border-gray-800 text-gray-800 font-mono">
                 Login
-              </button>
-              <button className="px-4 py-2 bg-gray-800 text-white font-mono">
+              </Link>
+              {/* <Link to="/register/buyer" className="px-4 py-2 bg-gray-800 text-white font-mono">
                 Register
-              </button>
+              </Link> */}
             </div>
           </div>
 
@@ -96,19 +101,33 @@ export default function Navigation() {
               >
                 Dashboard
               </Link>
-              <Link to="/banks"
-              className='text-gray-700 hover:text-gray-900 font-mono'
-              onClick={() => setMobileMenuOpen(false)}
+              <Link
+                to="/orders"
+                className="text-gray-700 hover:text-gray-900 font-mono"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                Banks 
-
+                Orders
               </Link>
-              <button className="px-4 py-2 border-2 border-gray-800 text-gray-800 font-mono text-left">
+              <Link
+                to="/notifications"
+                className="text-gray-700 hover:text-gray-900 font-mono"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Notifications
+              </Link>
+              <Link
+                to="/profile"
+                className="text-gray-700 hover:text-gray-900 font-mono"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Profile
+              </Link>
+              <Link to="/login" className="px-4 py-2 border-2 border-gray-800 text-gray-800 font-mono text-left">
                 Login
-              </button>
-              <button className="px-4 py-2 bg-gray-800 text-white font-mono">
+              </Link>
+              <Link to="/register/buyer" className="px-4 py-2 bg-gray-800 text-white font-mono">
                 Register
-              </button>
+              </Link>
             </div>
           </div>
         )}

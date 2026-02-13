@@ -22,6 +22,8 @@ import Banks_Verfications from './components/Banks_Verfications';
 import Login from './components/Login';
 import OTPVerification from './components/OTPVerification';
 import UserProfile from './components/UserProfile';
+import Notifications from './components/Notifications';
+import OrderManagement from './components/OrderManagement';
 
 export default function App() {
   return (
@@ -51,6 +53,8 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/otp-verification" element={<OTPVerification />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/orders" element={<OrderManagement />} />
           </Routes>
         </main>
         <Footer />
