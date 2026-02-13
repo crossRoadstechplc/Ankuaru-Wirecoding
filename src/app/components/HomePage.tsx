@@ -304,12 +304,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register/buyer">
               <button className="px-8 py-3 border border-gray-700 text-gray-800 font-mono text-lg bg-white">
-                Register as Buyer
-              </button>
-            </Link>
-            <Link to="/register/seller">
-              <button className="px-8 py-3 border border-gray-700 text-gray-800 font-mono text-lg bg-white">
-                Register as Seller
+                Register Now
               </button>
             </Link>
             <Link to="/bank-integration">
