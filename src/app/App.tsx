@@ -19,6 +19,9 @@ import SellPage from './components/SellPage';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import Banks_Verfications from './components/Banks_Verfications';
+import Login from './components/Login';
+import OTPVerification from './components/OTPVerification';
+import UserProfile from './components/UserProfile';
 
 export default function App() {
   return (
@@ -45,6 +48,9 @@ export default function App() {
             <Route path="/buy" element={<BuyPage />} />
             <Route path="/sell" element={<SellPage />} />
             <Route path="/banks" element={<Banks_Verfications />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/otp-verification" element={<OTPVerification />} />
+            <Route path="/profile" element={<UserProfile />} />
           </Routes>
         </main>
         <Footer />
