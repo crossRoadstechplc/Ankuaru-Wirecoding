@@ -1,114 +1,184 @@
-import { Wallet, TrendingUp, TrendingDown, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Clock, CheckCircle, XCircle, Activity, Bell, FileText, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Link } from 'react-router';
+import { useState } from 'react';
 
 const portfolioItems = [
-  { commodity: 'Gold', amount: '150 oz', avgPrice: '$2,020.00', currentPrice: '$2,045.50', value: '$306,825', pnl: '+$3,825', pnlPercent: '+1.3%', trending: 'up' },
-  { commodity: 'Crude Oil', amount: '500 bbl', avgPrice: '$85.00', currentPrice: '$82.35', value: '$41,175', pnl: '-$1,325', pnlPercent: '-3.1%', trending: 'down' },
-  { commodity: 'Coffee', amount: '2500 lbs', avgPrice: '$1.75', currentPrice: '$1.89', value: '$4,725', pnl: '+$350', pnlPercent: '+8.0%', trending: 'up' },
-  { commodity: 'Silver', amount: '1200 oz', avgPrice: '$25.50', currentPrice: '$24.10', value: '$28,920', pnl: '-$1,680', pnlPercent: '-5.5%', trending: 'down' },
+  { commodity: 'Arabica Coffee', amount: '500 kg', avgPrice: 'ETB 420.00', currentPrice: 'ETB 450.00', value: 'ETB 225,000', pnl: '+ETB 15,000', pnlPercent: '+7.1%', trending: 'up' },
+  { commodity: 'Black Pepper', amount: '200 kg', avgPrice: 'ETB 750.00', currentPrice: 'ETB 800.00', value: 'ETB 160,000', pnl: '+ETB 10,000', pnlPercent: '+6.7%', trending: 'up' },
+  { commodity: 'Robusta Coffee', amount: '1000 kg', avgPrice: 'ETB 400.00', currentPrice: 'ETB 380.00', value: 'ETB 380,000', pnl: '-ETB 20,000', pnlPercent: '-5.0%', trending: 'down' },
+  { commodity: 'Cardamom', amount: '150 kg', avgPrice: 'ETB 1150.00', currentPrice: 'ETB 1200.00', value: 'ETB 180,000', pnl: '+ETB 7,500', pnlPercent: '+4.3%', trending: 'up' },
 ];
 
 const openOrders = [
-  { id: 'ORD-1234', commodity: 'Wheat', type: 'Buy', orderType: 'Limit', quantity: '500 bu', price: '$6.20', status: 'Open', date: '2026-02-11 09:15' },
-  { id: 'ORD-1235', commodity: 'Natural Gas', type: 'Sell', orderType: 'Limit', quantity: '300 MMBtu', price: '$2.70', status: 'Open', date: '2026-02-11 08:45' },
-  { id: 'ORD-1236', commodity: 'Copper', type: 'Buy', orderType: 'Market', quantity: '200 lbs', price: 'Market', status: 'Pending', date: '2026-02-11 10:20' },
+  { id: 'ORD-001', commodity: 'Arabica Coffee', type: 'Buy', orderType: 'Limit', quantity: '500 kg', price: 'ETB 450', status: 'Open', date: '2024-01-22' },
+  { id: 'ORD-002', commodity: 'Black Pepper', type: 'Sell', orderType: 'Limit', quantity: '200 kg', price: 'ETB 800', status: 'Open', date: '2024-01-22' },
+  { id: 'ORD-003', commodity: 'Cardamom', type: 'Buy', orderType: 'Market', quantity: '100 kg', price: 'Market', status: 'Pending', date: '2024-01-23' },
 ];
 
 const transactionHistory = [
-  { id: 'TXN-5678', commodity: 'Gold', type: 'Buy', quantity: '50 oz', price: '$2,045.50', total: '$102,275', status: 'Completed', date: '2026-02-10 14:30' },
-  { id: 'TXN-5679', commodity: 'Coffee', type: 'Buy', quantity: '1000 lbs', price: '$1.89', total: '$1,890', status: 'Completed', date: '2026-02-10 11:15' },
-  { id: 'TXN-5680', commodity: 'Crude Oil', type: 'Sell', quantity: '200 bbl', price: '$82.35', total: '$16,470', status: 'Completed', date: '2026-02-09 16:45' },
-  { id: 'TXN-5681', commodity: 'Silver', type: 'Buy', quantity: '400 oz', price: '$24.10', total: '$9,640', status: 'Completed', date: '2026-02-09 13:20' },
-  { id: 'TXN-5682', commodity: 'Wheat', type: 'Sell', quantity: '800 bu', price: '$6.25', total: '$5,000', status: 'Failed', date: '2026-02-08 10:00' },
+  { id: 'TXN-001', commodity: 'Arabica Coffee', type: 'Buy', quantity: '500 kg', price: 'ETB 450', total: 'ETB 225,000', status: 'Completed', date: '2024-01-20' },
+  { id: 'TXN-002', commodity: 'Black Pepper', type: 'Sell', quantity: '200 kg', price: 'ETB 800', total: 'ETB 160,000', status: 'Completed', date: '2024-01-19' },
+  { id: 'TXN-003', commodity: 'Robusta Coffee', type: 'Buy', quantity: '1000 kg', price: 'ETB 380', total: 'ETB 380,000', status: 'Completed', date: '2024-01-18' },
+  { id: 'TXN-004', commodity: 'Cardamom', type: 'Buy', quantity: '150 kg', price: 'ETB 1200', total: 'ETB 180,000', status: 'Completed', date: '2024-01-17' },
+  { id: 'TXN-005', commodity: 'White Pepper', type: 'Sell', quantity: '100 kg', price: 'ETB 900', total: 'ETB 90,000', status: 'Failed', date: '2024-01-16' },
+];
+
+const recentActivity = [
+  { action: 'Order Placed', description: 'Buy order for Arabica Coffee - 500 kg', time: '2 hours ago' },
+  { action: 'Payment Received', description: 'ETB 160,000 from Black Pepper sale', time: '5 hours ago' },
+  { action: 'Order Completed', description: 'Robusta Coffee purchase completed', time: '1 day ago' },
+  { action: 'Bank Verified', description: 'Your bank account has been verified', time: '2 days ago' },
 ];
 
 export default function DashboardPage() {
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [amount, setAmount] = useState('');
+
+  const handleDeposit = () => {
+    alert(`Deposit request for ETB ${amount} submitted successfully!`);
+    setShowDepositModal(false);
+    setAmount('');
+  };
+
+  const handleWithdraw = () => {
+    alert(`Withdrawal request for ETB ${amount} submitted successfully!`);
+    setShowWithdrawModal(false);
+    setAmount('');
+  };
   return (
-    <div className="app-page">
-      <div className="app-shell">
-        <h1 className="app-page-title mb-8">Dashboard</h1>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-gray-600 mt-1">Welcome back! Here's your trading overview</p>
+          </div>
+          <div className="flex gap-3">
+            <Link to="/notifications">
+              <button className="p-3 border-2 border-gray-400 hover:bg-gray-100 rounded relative">
+                <Bell size={20} className="text-gray-700" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-gray-900 rounded-full"></span>
+              </button>
+            </Link>
+            <Link to="/profile">
+              <button className="px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 rounded font-semibold">
+                Profile
+              </button>
+            </Link>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-          <div className="bg-white border-2 border-gray-300 p-6">
+          <div className="bg-white border-2 border-gray-300 rounded p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-sm text-gray-600">Portfolio Value</span>
+              <span className="text-sm font-semibold text-gray-600">Portfolio Value</span>
               <Wallet size={20} className="text-gray-400" />
             </div>
-            <div className="font-mono text-2xl text-gray-900 mb-1">$381,645</div>
-            <div className="flex items-center text-gray-700 font-mono text-sm">
+            <div className="text-2xl font-bold text-gray-900 mb-1">ETB 945,000</div>
+            <div className="flex items-center text-gray-700 text-sm">
               <TrendingUp size={14} />
-              <span className="ml-1">+$1,170 (+0.3%)</span>
+              <span className="ml-1">+ETB 12,500 (+1.3%)</span>
             </div>
           </div>
 
-          <div className="bg-white border-2 border-gray-300 p-6">
+          <div className="bg-white border-2 border-gray-300 rounded p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-sm text-gray-600">Available Balance</span>
+              <span className="text-sm font-semibold text-gray-600">Available Balance</span>
               <Wallet size={20} className="text-gray-400" />
             </div>
-            <div className="font-mono text-2xl text-gray-900 mb-1">$50,000</div>
-            <div className="font-mono text-sm text-gray-600">Ready to trade</div>
+            <div className="text-2xl font-bold text-gray-900 mb-1">ETB 150,000</div>
+            <div className="text-sm text-gray-600">Ready to trade</div>
           </div>
 
-          <div className="bg-white border-2 border-gray-300 p-6">
+          <div className="bg-white border-2 border-gray-300 rounded p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-sm text-gray-600">Today's P&L</span>
+              <span className="text-sm font-semibold text-gray-600">Today's P&L</span>
               <TrendingUp size={20} className="text-gray-400" />
             </div>
-            <div className="font-mono text-2xl text-gray-900 mb-1">+$1,245</div>
-            <div className="flex items-center text-gray-700 font-mono text-sm">
-              <span>+0.33%</span>
+            <div className="text-2xl font-bold text-gray-900 mb-1">+ETB 3,200</div>
+            <div className="flex items-center text-gray-700 text-sm">
+              <span>+0.34%</span>
             </div>
           </div>
 
-          <div className="bg-white border-2 border-gray-300 p-6">
+          <div className="bg-white border-2 border-gray-300 rounded p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-sm text-gray-600">Open Orders</span>
+              <span className="text-sm font-semibold text-gray-600">Open Orders</span>
               <Clock size={20} className="text-gray-400" />
             </div>
-            <div className="font-mono text-2xl text-gray-900 mb-1">{openOrders.length}</div>
-            <div className="font-mono text-sm text-gray-600">Active positions</div>
+            <div className="text-2xl font-bold text-gray-900 mb-1">{openOrders.length}</div>
+            <div className="text-sm text-gray-600">Active positions</div>
           </div>
         </div>
 
-        <div className="bg-white border-2 border-gray-300 p-6 mb-8">
-          <h2 className="font-mono text-xl text-gray-900 mb-6">Portfolio Holdings</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full font-mono text-sm">
-              <thead>
-                <tr className="border-b-2 border-gray-300">
-                  <th className="text-left py-3 text-gray-700">Commodity</th>
-                  <th className="text-right py-3 text-gray-700">Amount</th>
-                  <th className="text-right py-3 text-gray-700">Avg Price</th>
-                  <th className="text-right py-3 text-gray-700">Current Price</th>
-                  <th className="text-right py-3 text-gray-700">Value</th>
-                  <th className="text-right py-3 text-gray-700">P&L</th>
-                  <th className="text-right py-3 text-gray-700">P&L %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {portfolioItems.map((item, index) => (
-                  <tr key={index} className="border-b border-gray-200">
-                    <td className="py-3 text-gray-900">{item.commodity}</td>
-                    <td className="text-right text-gray-900">{item.amount}</td>
-                    <td className="text-right text-gray-600">{item.avgPrice}</td>
-                    <td className="text-right text-gray-900">{item.currentPrice}</td>
-                    <td className="text-right text-gray-900">{item.value}</td>
-                    <td className="text-right text-gray-700">{item.pnl}</td>
-                    <td className="text-right flex items-center justify-end py-3 text-gray-700">
-                      {item.trending === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                      <span className="ml-1">{item.pnlPercent}</span>
-                    </td>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2 bg-white border-2 border-gray-300 rounded p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Portfolio Holdings</h2>
+              <Link to="/orders">
+                <button className="text-sm text-gray-700 hover:underline font-medium">View All</button>
+              </Link>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b-2 border-gray-300">
+                    <th className="text-left py-3 text-gray-700">Commodity</th>
+                    <th className="text-right py-3 text-gray-700">Amount</th>
+                    <th className="text-right py-3 text-gray-700">Avg Price</th>
+                    <th className="text-right py-3 text-gray-700">Current Price</th>
+                    <th className="text-right py-3 text-gray-700">Value</th>
+                    <th className="text-right py-3 text-gray-700">P&L</th>
+                    <th className="text-right py-3 text-gray-700">P&L %</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {portfolioItems.map((item, index) => (
+                    <tr key={index} className="border-b border-gray-200">
+                      <td className="py-3 text-gray-900">{item.commodity}</td>
+                      <td className="text-right text-gray-900">{item.amount}</td>
+                      <td className="text-right text-gray-600">{item.avgPrice}</td>
+                      <td className="text-right text-gray-900">{item.currentPrice}</td>
+                      <td className="text-right text-gray-900">{item.value}</td>
+                      <td className="text-right text-gray-700">{item.pnl}</td>
+                      <td className="text-right flex items-center justify-end py-3 text-gray-700">
+                        {item.trending === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                        <span className="ml-1">{item.pnlPercent}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="bg-white border-2 border-gray-300 rounded p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <Activity size={20} className="text-gray-700" />
+              <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+            </div>
+            <div className="space-y-4">
+              {recentActivity.map((activity, index) => (
+                <div key={index} className="border-b border-gray-200 pb-4 last:border-0">
+                  <div className="font-semibold text-gray-900 text-sm mb-1">{activity.action}</div>
+                  <div className="text-sm text-gray-600 mb-1">{activity.description}</div>
+                  <div className="text-xs text-gray-500">{activity.time}</div>
+                </div>
+              ))}
+            </div>
+            <Link to="/notifications">
+              <button className="w-full mt-4 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 rounded font-semibold">
+                View All Activity
+              </button>
+            </Link>
           </div>
         </div>
 
-        <div className="bg-white border-2 border-gray-300 p-6 mb-8">
-          <h2 className="font-mono text-xl text-gray-900 mb-6">Open Orders</h2>
+        <div className="bg-white border-2 border-gray-300 rounded p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Open Orders</h2>
           <div className="overflow-x-auto">
-            <table className="w-full font-mono text-sm">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b-2 border-gray-300">
                   <th className="text-left py-3 text-gray-700">Order ID</th>
@@ -147,10 +217,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border-2 border-gray-300 p-6 mb-8">
-          <h2 className="font-mono text-xl text-gray-900 mb-6">Transaction History</h2>
+        <div className="bg-white border-2 border-gray-300 rounded p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Transaction History</h2>
           <div className="overflow-x-auto">
-            <table className="w-full font-mono text-sm">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b-2 border-gray-300">
                   <th className="text-left py-3 text-gray-700">Transaction ID</th>
@@ -188,34 +258,131 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border-2 border-gray-300 p-6">
-          <h2 className="font-mono text-xl text-gray-900 mb-6">Wallet Balance</h2>
+        <div className="bg-white border-2 border-gray-300 rounded p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Wallet Balance</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="border-2 border-gray-300 p-4">
-              <div className="font-mono text-sm text-gray-600 mb-2">Total Balance</div>
-              <div className="font-mono text-2xl text-gray-900 mb-4">$431,645.00</div>
-              <div className="font-mono text-xs text-gray-600">Portfolio + Available</div>
+            <div className="border-2 border-gray-300 rounded p-4">
+              <div className="text-sm text-gray-600 mb-2">Total Balance</div>
+              <div className="text-2xl font-bold text-gray-900 mb-4">ETB 1,095,000</div>
+              <div className="text-xs text-gray-600">Portfolio + Available</div>
             </div>
 
-            <div className="border-2 border-gray-300 p-4">
-              <div className="font-mono text-sm text-gray-600 mb-2">In Trading</div>
-              <div className="font-mono text-2xl text-gray-900 mb-4">$381,645.00</div>
-              <div className="font-mono text-xs text-gray-600">Active positions</div>
+            <div className="border-2 border-gray-300 rounded p-4">
+              <div className="text-sm text-gray-600 mb-2">In Trading</div>
+              <div className="text-2xl font-bold text-gray-900 mb-4">ETB 945,000</div>
+              <div className="text-xs text-gray-600">Active positions</div>
             </div>
 
-            <div className="border-2 border-gray-300 p-4">
-              <div className="font-mono text-sm text-gray-600 mb-2">Available</div>
-              <div className="font-mono text-2xl text-gray-900 mb-4">$50,000.00</div>
-              <div className="font-mono text-xs text-gray-600">Ready to trade</div>
+            <div className="border-2 border-gray-300 rounded p-4">
+              <div className="text-sm text-gray-600 mb-2">Available</div>
+              <div className="text-2xl font-bold text-gray-900 mb-4">ETB 150,000</div>
+              <div className="text-xs text-gray-600">Ready to trade</div>
             </div>
           </div>
 
           <div className="mt-6 flex gap-4">
-            <button className="px-6 py-3 border-2 border-gray-800 text-gray-800 font-mono hover:bg-gray-100">Deposit Funds</button>
-            <button className="px-6 py-3 border-2 border-gray-800 text-gray-800 font-mono hover:bg-gray-100">Withdraw Funds</button>
+            <button 
+              onClick={() => setShowDepositModal(true)}
+              className="px-6 py-3 border-2 border-gray-800 text-gray-800 hover:bg-gray-100 rounded font-semibold"
+            >
+              Deposit Funds
+            </button>
+            <button 
+              onClick={() => setShowWithdrawModal(true)}
+              className="px-6 py-3 border-2 border-gray-800 text-gray-800 hover:bg-gray-100 rounded font-semibold"
+            >
+              Withdraw Funds
+            </button>
           </div>
         </div>
       </div>
+
+      {showDepositModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white border-2 border-gray-300 rounded p-6 max-w-md w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <ArrowUpCircle size={24} className="text-gray-700" />
+              <h3 className="text-xl font-bold text-gray-900">Deposit Funds</h3>
+            </div>
+            <p className="text-gray-600 mb-4">Enter the amount you want to deposit to your trading account.</p>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Amount (ETB)</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-gray-500"
+              />
+            </div>
+            <div className="bg-gray-100 border-2 border-gray-300 rounded p-3 mb-4">
+              <p className="text-xs text-gray-600">Funds will be transferred via bank transfer. Processing time: 1-2 business days.</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDeposit}
+                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 font-semibold"
+                disabled={!amount || parseFloat(amount) <= 0}
+              >
+                Confirm Deposit
+              </button>
+              <button
+                onClick={() => {
+                  setShowDepositModal(false);
+                  setAmount('');
+                }}
+                className="flex-1 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 rounded font-semibold"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showWithdrawModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white border-2 border-gray-300 rounded p-6 max-w-md w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <ArrowDownCircle size={24} className="text-gray-700" />
+              <h3 className="text-xl font-bold text-gray-900">Withdraw Funds</h3>
+            </div>
+            <p className="text-gray-600 mb-4">Enter the amount you want to withdraw from your trading account.</p>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Amount (ETB)</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-gray-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">Available balance: ETB 150,000</p>
+            </div>
+            <div className="bg-gray-100 border-2 border-gray-300 rounded p-3 mb-4">
+              <p className="text-xs text-gray-600">Funds will be transferred to your verified bank account. Processing time: 2-3 business days.</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleWithdraw}
+                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 font-semibold"
+                disabled={!amount || parseFloat(amount) <= 0 || parseFloat(amount) > 150000}
+              >
+                Confirm Withdrawal
+              </button>
+              <button
+                onClick={() => {
+                  setShowWithdrawModal(false);
+                  setAmount('');
+                }}
+                className="flex-1 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 rounded font-semibold"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
