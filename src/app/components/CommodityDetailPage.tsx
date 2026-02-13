@@ -1,11 +1,28 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import { ArrowLeft, TrendingUp } from 'lucide-react';
 
 export default function CommodityDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('kg');
+
+  const productData = {
+    category: 'Coffee',
+    productName: 'Arabica Coffee - Grade 1',
+    region: 'Sidamo',
+    grade: 'Grade 1',
+    description: 'Premium Arabica coffee beans from Sidamo region. Known for exceptional quality with floral and citrus notes.',
+  };
+
+  const handleProceedToBuy = () => {
+    navigate('/buy', { state: { ...productData, quantity, unit } });
+  };
+
+  const handleListForSale = () => {
+    navigate('/sell', { state: productData });
+  };
 
   return (
     <div className="app-page">
@@ -217,17 +234,21 @@ export default function CommodityDetailPage() {
                   </div>
                 </div>
 
-                <Link to="/buy">
-                  <button type="button" className="w-full px-6 py-3 border-2 border-gray-800 text-gray-800 font-mono text-lg hover:bg-gray-100">
-                    Proceed to Buy
-                  </button>
-                </Link>
+                <button 
+                  type="button" 
+                  onClick={handleProceedToBuy}
+                  className="w-full px-6 py-3 border-2 border-gray-800 text-gray-800 font-mono text-lg hover:bg-gray-100"
+                >
+                  Proceed to Buy
+                </button>
 
-                <Link to="/sell">
-                  <button type="button" className="w-full px-6 py-3 border border-gray-700 text-gray-800 font-mono hover:bg-gray-100">
-                    List for Sale
-                  </button>
-                </Link>
+                <button 
+                  type="button" 
+                  onClick={handleListForSale}
+                  className="w-full px-6 py-3 border border-gray-700 text-gray-800 font-mono hover:bg-gray-100"
+                >
+                  List for Sale
+                </button>
               </form>
             </div>
           </div>
