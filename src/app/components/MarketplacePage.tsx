@@ -41,8 +41,8 @@ export default function MarketplacePage() {
 
         <div className="flex flex-col md:flex-row gap-8">
           {/* Filter Sidebar */}
-          <aside className={`md:w-64 ${mobileFilterOpen ? 'block' : 'hidden md:block'}`}>
-            <div className="bg-white border-2 border-gray-300 p-6">
+          <aside className={`md:w-64 md:sticky md:top-8 md:self-start md:max-h-[calc(100vh-4rem)] ${mobileFilterOpen ? 'block' : 'hidden md:block'}`}>
+            <div className="bg-white border-2 border-gray-300 p-6 md:max-h-[calc(100vh-4rem)] md:overflow-y-auto">
               <h2 className="font-mono text-lg text-gray-900 mb-4">Filters</h2>
 
               {/* Commodity Type */}

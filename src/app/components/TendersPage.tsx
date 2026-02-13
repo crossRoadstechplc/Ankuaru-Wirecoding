@@ -27,14 +27,84 @@ const recentTrades = [
   { time: '14:35:02', price: 'ETB 145.50', amount: '90 kg', type: 'buy' },
 ];
 
-const openOrders = [
+const initialOpenOrders = [
   { id: 'ORD-2026-0101', type: 'Limit Buy', commodity: 'Coffee (Arabica)', price: 'ETB 144.50', amount: '200 kg', status: 'Open', time: '14:20:15' },
   { id: 'ORD-2026-0102', type: 'Limit Sell', commodity: 'Coffee (Arabica)', price: 'ETB 146.00', amount: '150 kg', status: 'Open', time: '14:18:42' },
 ];
 
+const marketPrice = 145.5;
+const commodityName = 'Coffee (Arabica)';
+
+type OpenOrder = {
+  id: string;
+  type: string;
+  commodity: string;
+  price: string;
+  amount: string;
+  status: string;
+  time: string;
+};
+
+function formatEtb(value: number): string {
+  return `ETB ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function parsePositiveNumber(value: string): number | null {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+  return parsed;
+}
+
 export default function TendersPage() {
   const [orderType, setOrderType] = useState('limit');
   const [buySell, setBuySell] = useState('buy');
+  const [priceInput, setPriceInput] = useState(marketPrice.toFixed(2));
+  const [amountInput, setAmountInput] = useState('');
+  const [orders, setOrders] = useState<OpenOrder[]>(initialOpenOrders);
+  const [feedback, setFeedback] = useState('');
+
+  const parsedAmount = parsePositiveNumber(amountInput);
+  const parsedPrice = orderType === 'market' ? marketPrice : parsePositiveNumber(priceInput);
+  const orderTotal = parsedAmount !== null && parsedPrice !== null ? parsedAmount * parsedPrice : 0;
+
+  const handlePlaceOrder = () => {
+    setFeedback('');
+
+    if (parsedAmount === null) {
+      setFeedback('Enter a valid amount greater than 0.');
+      return;
+    }
+
+    if (parsedPrice === null) {
+      setFeedback('Enter a valid price greater than 0.');
+      return;
+    }
+
+    const now = new Date();
+    const orderId = `ORD-${now.getFullYear()}-${String(now.getTime()).slice(-6)}`;
+    const orderTime = now.toLocaleTimeString('en-US', { hour12: false });
+
+    const newOrder: OpenOrder = {
+      id: orderId,
+      type: `${orderType === 'market' ? 'Market' : 'Limit'} ${buySell === 'buy' ? 'Buy' : 'Sell'}`,
+      commodity: commodityName,
+      price: formatEtb(parsedPrice),
+      amount: `${parsedAmount} kg`,
+      status: 'Open',
+      time: orderTime,
+    };
+
+    setOrders((currentOrders) => [newOrder, ...currentOrders]);
+    setAmountInput('');
+    setFeedback(`${buySell === 'buy' ? 'Buy' : 'Sell'} order ${orderId} placed.`);
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    setOrders((currentOrders) => currentOrders.filter((order) => order.id !== orderId));
+    setFeedback(`Order ${orderId} cancelled.`);
+  };
 
   return (
     <div className="app-page">
@@ -155,7 +225,10 @@ export default function TendersPage() {
             <div className="bg-white border-2 border-gray-300 p-6">
               <h3 className="font-mono text-lg text-gray-900 mb-4">My Open Orders</h3>
               <div className="space-y-3">
-                {openOrders.map((order) => (
+                {orders.length === 0 && (
+                  <p className="font-mono text-sm text-gray-600">No open orders.</p>
+                )}
+                {orders.map((order) => (
                   <div key={order.id} className="border-2 border-gray-300 p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
@@ -178,7 +251,13 @@ export default function TendersPage() {
                         <span className="text-gray-900">{order.time}</span>
                       </div>
                     </div>
-                    <button className="px-4 py-1 border-2 border-gray-800 text-gray-800 font-mono text-xs hover:bg-gray-100">Cancel Order</button>
+                    <button
+                      type="button"
+                      onClick={() => handleCancelOrder(order.id)}
+                      className="px-4 py-1 border-2 border-gray-800 text-gray-800 font-mono text-xs hover:bg-gray-100"
+                    >
+                      Cancel Order
+                    </button>
                   </div>
                 ))}
               </div>
@@ -190,10 +269,8 @@ export default function TendersPage() {
               <h3 className="font-mono text-lg text-gray-900 mb-6">Place Order</h3>
 
               <div className="grid grid-cols-2 gap-2 mb-6">
-
-                                {/* <button className="px-4 py-2 border border-gray-700 text-gray-800 font-mono bg-white"> */}
-
                 <button
+                  type="button"
                   onClick={() => setBuySell('buy')}
                   className={`px-4 py-3 font-mono ${
                     buySell === 'buy'
@@ -203,10 +280,8 @@ export default function TendersPage() {
                 >
                   BUY
                 </button>
-
-
-                
                 <button
+                  type="button"
                   onClick={() => setBuySell('sell')}
                   className={`px-4 py-3 font-mono ${
                     buySell === 'sell'
@@ -222,6 +297,7 @@ export default function TendersPage() {
                 <label className="font-mono text-sm text-gray-700 mb-2 block">Order Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
+                    type="button"
                     onClick={() => setOrderType('limit')}
                     className={`px-4 py-2 font-mono text-sm ${
                       orderType === 'limit'
@@ -232,6 +308,7 @@ export default function TendersPage() {
                     Limit
                   </button>
                   <button
+                    type="button"
                     onClick={() => setOrderType('market')}
                     className={`px-4 py-2 font-mono text-sm ${
                       orderType === 'market'
@@ -247,25 +324,47 @@ export default function TendersPage() {
               {orderType === 'limit' && (
                 <div className="mb-4">
                   <label className="font-mono text-sm text-gray-700 mb-2 block">Price (ETB/kg)</label>
-                  <input type="text" placeholder="145.50" className="w-full border-2 border-gray-300 p-3 font-mono text-gray-900" />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={priceInput}
+                    onChange={(event) => setPriceInput(event.target.value)}
+                    placeholder="145.50"
+                    className="w-full border-2 border-gray-300 p-3 font-mono text-gray-900"
+                  />
                 </div>
               )}
 
               <div className="mb-4">
                 <label className="font-mono text-sm text-gray-700 mb-2 block">Amount (kg)</label>
-                <input type="text" placeholder="0" className="w-full border-2 border-gray-300 p-3 font-mono text-gray-900" />
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={amountInput}
+                  onChange={(event) => setAmountInput(event.target.value)}
+                  placeholder="0"
+                  className="w-full border-2 border-gray-300 p-3 font-mono text-gray-900"
+                />
               </div>
 
               <div className="mb-6 p-4 bg-gray-100 border-2 border-gray-300">
                 <div className="flex justify-between font-mono text-sm">
                   <span className="text-gray-600">Total:</span>
-                  <span className="text-gray-900">ETB 0.00</span>
+                  <span className="text-gray-900">{formatEtb(orderTotal)}</span>
                 </div>
               </div>
 
-              <button className="w-full px-4 py-3 border-2 border-gray-800 text-gray-800 font-mono hover:bg-gray-100">
+              <button
+                type="button"
+                onClick={handlePlaceOrder}
+                className="w-full px-4 py-3 border-2 border-gray-800 text-gray-800 font-mono hover:bg-gray-100"
+              >
                 {buySell === 'buy' ? 'Place Buy Order' : 'Place Sell Order'}
               </button>
+
+              {feedback && <p className="mt-3 font-mono text-xs text-gray-700">{feedback}</p>}
 
               <div className="pt-4 mt-4 border-t-2 border-gray-300">
                 <div className="font-mono text-xs text-gray-600 space-y-2">
