@@ -220,21 +220,20 @@ export default function BuyPage() {
               </div>
               <div className="space-y-6">
                 <div>
-                  <label className="block font-semibold text-sm text-gray-700 mb-2">Select Payment Method</label>
-                  <div className="space-y-3">
-                    {['Bank Transfer', 'Mobile Money', 'Credit Card', 'Cash on Delivery'].map((method) => (
-                      <label key={method} className="flex items-center p-4 border-2 border-gray-300 rounded cursor-pointer hover:bg-gray-50">
-                        <input
-                          type="radio"
-                          name="payment"
-                          value={method}
-                          checked={formData.paymentMethod === method}
-                          onChange={(e) => handleChange('paymentMethod', e.target.value)}
-                          className="w-4 h-4 mr-3"
-                        />
-                        <span className="font-medium text-gray-900">{method}</span>
-                      </label>
-                    ))}
+                  <label className="block font-semibold text-sm text-gray-700 mb-2">Payment Method</label>
+                  <div className="p-4 border-2 border-gray-300 rounded bg-gray-50">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="Bank Transfer"
+                        checked={true}
+                        readOnly
+                        className="w-4 h-4 mr-3"
+                      />
+                      <span className="font-medium text-gray-900">Bank Transfer</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2 ml-7">All payments are processed via bank transfer for security</p>
                   </div>
                 </div>
 
